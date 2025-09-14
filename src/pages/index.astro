@@ -1,0 +1,197 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { siteConfig } from '../config/site';
+
+// 示例博客文章数据 (在实际项目中，这些数据会从 CMS 或 Markdown 文件获取)
+const featuredPosts = [
+  {
+    slug: 'hello-world',
+    title: '欢迎来到我的博客',
+    description: '这是我的第一篇博客文章，分享我创建这个博客的初衷和未来计划。',
+    publishDate: new Date('2024-01-15'),
+    author: '博主',
+    category: '公告',
+    readingTime: '3 分钟',
+    image: 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=400&fit=crop',
+    featured: true
+  },
+  {
+    slug: 'astro-tailwind-guide',
+    title: 'Astro + TailwindCSS 快速上手指南',
+    description: '详细介绍如何使用 Astro 和 TailwindCSS 构建现代化的静态网站。',
+    publishDate: new Date('2024-01-20'),
+    author: '博主',
+    category: '技术',
+    readingTime: '8 分钟',
+    image: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&h=400&fit=crop',
+    featured: true
+  },
+  {
+    slug: 'web-development-trends-2024',
+    title: '2024 年前端开发趋势预测',
+    description: '探讨 2024 年前端开发领域的新技术、新框架和发展趋势。',
+    publishDate: new Date('2024-01-25'),
+    author: '博主',
+    category: '技术',
+    readingTime: '12 分钟',
+    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=400&fit=crop',
+    featured: true
+  }
+];
+---
+
+<BaseLayout title={siteConfig.title} description={siteConfig.description}>
+  <!-- Hero Section -->
+  <section class="bg-gradient-to-br from-blue-50 to-indigo-100 py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center">
+        <h1 class="text-4xl md:text-6xl font-bold text-gray-900 mb-6 fade-in">
+          欢迎来到
+          <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            我的博客
+          </span>
+        </h1>
+        <p class="text-xl md:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto slide-up">
+          分享技术见解、生活感悟和创意思考的个人空间
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center slide-up">
+          <a 
+            href="/blog" 
+            class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-lg transition-colors focus-ring"
+          >
+            阅读博客
+          </a>
+          <a 
+            href="/about" 
+            class="border border-gray-300 hover:border-gray-400 text-gray-700 font-semibold px-8 py-3 rounded-lg transition-colors focus-ring"
+          >
+            了解更多
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Posts Section -->
+  <section class="py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">精选文章</h2>
+        <p class="text-lg text-gray-600">最新和最受欢迎的博客文章</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {featuredPosts.map((post, index) => (
+          <article class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow overflow-hidden slide-up" style={`animation-delay: ${index * 0.1}s`}>
+            <div class="aspect-w-16 aspect-h-9">
+              <img 
+                src={post.image} 
+                alt={post.title}
+                class="w-full h-48 object-cover"
+              />
+            </div>
+            <div class="p-6">
+              <div class="flex items-center mb-3">
+                <span class="bg-blue-100 text-blue-800 text-sm px-2 py-1 rounded-full">
+                  {post.category}
+                </span>
+                <span class="text-gray-500 text-sm ml-auto">
+                  {post.readingTime}
+                </span>
+              </div>
+              <h3 class="text-xl font-semibold text-gray-900 mb-2 line-clamp-2">
+                <a href={`/blog/${post.slug}`} class="hover:text-blue-600 transition-colors">
+                  {post.title}
+                </a>
+              </h3>
+              <p class="text-gray-600 mb-4 line-clamp-3">
+                {post.description}
+              </p>
+              <div class="flex items-center justify-between">
+                <div class="flex items-center text-sm text-gray-500">
+                  <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  {post.publishDate.toLocaleDateString('zh-CN')}
+                </div>
+                <a 
+                  href={`/blog/${post.slug}`}
+                  class="text-blue-600 hover:text-blue-700 font-medium text-sm transition-colors"
+                >
+                  阅读更多 →
+                </a>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+
+      <div class="text-center mt-12">
+        <a 
+          href="/blog"
+          class="inline-flex items-center bg-white border border-gray-300 hover:border-gray-400 text-gray-700 font-semibold px-6 py-3 rounded-lg transition-colors focus-ring"
+        >
+          查看所有文章
+          <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+          </svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section class="bg-gray-900 text-white py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div>
+          <h2 class="text-3xl md:text-4xl font-bold mb-6">关于这个博客</h2>
+          <p class="text-lg text-gray-300 mb-6 leading-relaxed">
+            这里是我分享技术心得、生活感悟和创意想法的地方。我相信通过分享和交流，
+            我们可以共同学习和成长。无论是编程技巧、设计灵感，还是日常思考，
+            都希望能够给你带来一些启发和帮助。
+          </p>
+          <p class="text-lg text-gray-300 mb-8 leading-relaxed">
+            如果你对某个话题感兴趣，或者想要交流讨论，欢迎通过邮件或社交媒体联系我。
+          </p>
+          <a 
+            href="/about"
+            class="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition-colors focus-ring"
+          >
+            更多关于我
+            <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          </a>
+        </div>
+        <div class="relative">
+          <div class="bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl p-8 text-center">
+            <div class="bg-white/10 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-6">
+              <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+              </svg>
+            </div>
+            <h3 class="text-xl font-semibold mb-2">持续学习</h3>
+            <p class="text-white/80">保持好奇心，探索新技术和新想法</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>

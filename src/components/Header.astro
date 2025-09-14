@@ -1,0 +1,123 @@
+---
+import ThemeToggleNav from './ThemeToggleNav.astro';
+import ThemeToggleMobile from './ThemeToggleMobile.astro';
+---
+
+<header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50 transition-colors">
+  <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center h-16">
+      <!-- Logo -->
+      <div class="flex-shrink-0">
+        <a href="/" class="text-2xl font-bold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+          我的博客
+        </a>
+      </div>
+
+      <!-- Desktop Navigation -->
+      <div class="hidden md:flex items-center">
+        <div class="ml-10 flex items-baseline space-x-8">
+          <a
+            href="/"
+            class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 text-sm font-medium transition-colors"
+          >
+            首页
+          </a>
+          <a
+            href="/blog"
+            class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 text-sm font-medium transition-colors"
+          >
+            博客
+          </a>
+          <a
+            href="/faq"
+            class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 text-sm font-medium transition-colors"
+          >
+            FAQ
+          </a>
+          <a
+            href="/about"
+            class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 text-sm font-medium transition-colors"
+          >
+            关于
+          </a>
+          <a
+            href="/contact"
+            class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 text-sm font-medium transition-colors"
+          >
+            联系
+          </a>
+        </div>
+        <!-- Theme Toggle Button -->
+        <div class="ml-6">
+          <ThemeToggleNav />
+        </div>
+      </div>
+
+      <!-- Mobile menu button -->
+      <div class="md:hidden flex items-center space-x-2">
+        <!-- Mobile Theme Toggle -->
+        <ThemeToggleMobile />
+        <button
+          type="button"
+          class="bg-white dark:bg-gray-800 inline-flex items-center justify-center p-2 rounded-md text-gray-400 dark:text-gray-300 hover:text-gray-500 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 transition-colors"
+          aria-controls="mobile-menu"
+          aria-expanded="false"
+          id="mobile-menu-button"
+        >
+          <span class="sr-only">打开主菜单</span>
+          <svg
+            class="block h-6 w-6"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            aria-hidden="true"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile menu -->
+    <div class="md:hidden hidden" id="mobile-menu">
+      <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+        <a href="/" class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 block px-3 py-2 text-base font-medium transition-colors">
+          首页
+        </a>
+        <a href="/blog" class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 block px-3 py-2 text-base font-medium transition-colors">
+          博客
+        </a>
+        <a href="/faq" class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 block px-3 py-2 text-base font-medium transition-colors">
+          FAQ
+        </a>
+        <a href="/about" class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 block px-3 py-2 text-base font-medium transition-colors">
+          关于
+        </a>
+        <a href="/contact" class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 block px-3 py-2 text-base font-medium transition-colors">
+          联系
+        </a>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    
+    if (mobileMenuButton && mobileMenu) {
+      mobileMenuButton.addEventListener('click', function() {
+        const isExpanded = mobileMenuButton.getAttribute('aria-expanded') === 'true';
+        mobileMenuButton.setAttribute('aria-expanded', (!isExpanded).toString());
+        
+        if (isExpanded) {
+          mobileMenu.classList.add('hidden');
+        } else {
+          mobileMenu.classList.remove('hidden');
+        }
+      });
+    }
+  });
+</script>

@@ -1,0 +1,31 @@
+---
+import { getCollection } from 'astro:content';
+import FaqLayout from '../../layouts/FaqLayout.astro';
+import Prose from '../../components/Prose.astro';
+
+export async function getStaticPaths() {
+  const faqs = await getCollection('faq');
+  
+  return faqs.map(faq => ({
+    params: { slug: faq.slug },
+    props: { faq }
+  }));
+}
+
+const { faq } = Astro.props;
+const { Content } = await faq.render();
+---
+
+<FaqLayout
+  title={faq.data.title}
+  category={faq.data.category}
+  tags={faq.data.tags}
+  publishDate={faq.data.publishDate}
+  updatedDate={faq.data.updatedDate}
+  difficulty={faq.data.difficulty}
+  featured={faq.data.featured}
+>
+  <Prose>
+    <Content />
+  </Prose>
+</FaqLayout>

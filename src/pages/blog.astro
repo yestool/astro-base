@@ -1,0 +1,215 @@
+---
+import BlogLayout from '../layouts/BlogLayout.astro';
+import { getCollection } from 'astro:content';
+
+// 获取所有博客文章
+const allPosts = await getCollection('blog');
+
+// 按日期排序
+const sortedPosts = allPosts
+  .map(post => ({
+    ...post.data,
+    slug: post.slug,
+  }))
+  .sort((a, b) => b.publishDate.getTime() - a.publishDate.getTime());
+
+// 获取所有分类
+const categories = [...new Set(allPosts.map(post => post.data.category))].sort();
+
+// 获取所有标签
+const allTags = [...new Set(allPosts.flatMap(post => post.data.tags))].sort();
+---
+
+<BlogLayout 
+  title="博客文章"
+  description="浏览所有博客文章，包括技术分享、生活感悟和思考随笔"
+>
+  <!-- Filter Section -->
+  <div class="mb-8">
+    <div class="flex flex-wrap gap-4 justify-center">
+      <button 
+        class="filter-btn active bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-medium transition-colors hover:bg-blue-700"
+        data-category="all"
+      >
+        全部
+      </button>
+      {categories.map(category => (
+        <button 
+          class="filter-btn bg-gray-200 text-gray-700 px-4 py-2 rounded-full text-sm font-medium transition-colors hover:bg-gray-300"
+          data-category={category}
+        >
+          {category}
+        </button>
+      ))}
+    </div>
+  </div>
+
+  <!-- Posts Grid -->
+  <div id="posts-container" class="grid grid-cols-1 md:grid-cols-2 gap-8">
+    {sortedPosts.map((post, index) => (
+      <article 
+        class="post-card bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden slide-up"
+        style={`animation-delay: ${index * 0.1}s`}
+        data-category={post.category}
+      >
+        <div class="aspect-w-16 aspect-h-9">
+          <img 
+            src={post.image || 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=400&fit=crop'} 
+            alt={post.title}
+            class="w-full h-48 object-cover"
+          />
+        </div>
+        <div class="p-6">
+          <div class="flex items-center mb-3">
+            <span class="bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full font-medium">
+              {post.category}
+            </span>
+            {post.featured && (
+              <span class="bg-yellow-100 text-yellow-800 text-sm px-3 py-1 rounded-full font-medium ml-2">
+                精选
+              </span>
+            )}
+            <span class="text-gray-500 text-sm ml-auto flex items-center">
+              <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              {post.readingTime}
+            </span>
+          </div>
+          
+          <h2 class="text-xl font-semibold text-gray-900 mb-3 line-clamp-2">
+            <a href={`/blog/${post.slug}`} class="hover:text-blue-600 transition-colors">
+              {post.title}
+            </a>
+          </h2>
+          
+          <p class="text-gray-600 mb-4 line-clamp-3">
+            {post.description}
+          </p>
+
+          <!-- Tags -->
+          <div class="flex flex-wrap gap-2 mb-4">
+            {post.tags.slice(0, 3).map(tag => (
+              <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
+                #{tag}
+              </span>
+            ))}
+            {post.tags.length > 3 && (
+              <span class="text-xs text-gray-400">
+                +{post.tags.length - 3}
+              </span>
+            )}
+          </div>
+
+          <div class="flex items-center justify-between">
+            <div class="flex items-center text-sm text-gray-500">
+              <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+              {post.author}
+            </div>
+            <div class="flex items-center text-sm text-gray-500">
+              <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              {post.publishDate.toLocaleDateString('zh-CN')}
+            </div>
+          </div>
+
+          <div class="mt-4">
+            <a 
+              href={`/blog/${post.slug}`}
+              class="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium text-sm transition-colors group"
+            >
+              阅读全文
+              <svg class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </a>
+          </div>
+        </div>
+      </article>
+    ))}
+  </div>
+
+  <!-- No posts message (hidden by default) -->
+  <div id="no-posts" class="hidden text-center py-12">
+    <div class="text-gray-400 mb-4">
+      <svg class="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+      </svg>
+    </div>
+    <h3 class="text-xl font-semibold text-gray-600 mb-2">暂无文章</h3>
+    <p class="text-gray-500">该分类下还没有文章，请选择其他分类查看。</p>
+  </div>
+</BlogLayout>
+
+<script is:inline>
+  document.addEventListener('DOMContentLoaded', function() {
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const postCards = document.querySelectorAll('.post-card');
+    const noPostsMessage = document.getElementById('no-posts');
+    const postsContainer = document.getElementById('posts-container');
+
+    filterButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        const category = this.getAttribute('data-category');
+        
+        // Update active button
+        filterButtons.forEach(btn => {
+          btn.classList.remove('active', 'bg-blue-600', 'text-white');
+          btn.classList.add('bg-gray-200', 'text-gray-700');
+        });
+        
+        this.classList.remove('bg-gray-200', 'text-gray-700');
+        this.classList.add('active', 'bg-blue-600', 'text-white');
+
+        // Filter posts
+        let visibleCount = 0;
+        postCards.forEach(card => {
+          const postCategory = card.getAttribute('data-category');
+          if (category === 'all' || postCategory === category) {
+            card.style.display = 'block';
+            visibleCount++;
+          } else {
+            card.style.display = 'none';
+          }
+        });
+
+        // Show/hide no posts message
+        if (visibleCount === 0) {
+          postsContainer.style.display = 'none';
+          noPostsMessage.classList.remove('hidden');
+        } else {
+          postsContainer.style.display = 'grid';
+          noPostsMessage.classList.add('hidden');
+        }
+      });
+    });
+  });
+</script>
+
+<style>
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .post-card {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+
+  .post-card.slide-up {
+    animation: slideUp 0.6s ease-out forwards;
+  }
+</style>

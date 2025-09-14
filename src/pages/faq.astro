@@ -1,0 +1,415 @@
+---
+import BlogLayout from '../layouts/BlogLayout.astro';
+import { getCollection } from 'astro:content';
+
+// 获取所有 FAQ
+const allFaqs = await getCollection('faq');
+
+// 按日期排序
+const sortedFaqs = allFaqs
+  .map(faq => ({
+    ...faq.data,
+    slug: faq.slug,
+  }))
+  .sort((a, b) => b.publishDate.getTime() - a.publishDate.getTime());
+
+// 获取所有分类
+const categories = [...new Set(allFaqs.map(faq => faq.data.category))].sort();
+
+// 获取所有标签
+const allTags = [...new Set(allFaqs.flatMap(faq => faq.data.tags))].sort();
+
+// 获取所有难度级别
+const difficulties = [...new Set(allFaqs.map(faq => faq.data.difficulty).filter(Boolean))].sort();
+---
+
+<BlogLayout 
+  title="常见问题"
+  description="浏览常见问题和解答，快速找到你需要的帮助信息"
+>
+  <!-- Search Section -->
+  <div class="mb-8">
+    <div class="max-w-md mx-auto">
+      <div class="relative">
+        <input 
+          type="text" 
+          id="search-input"
+          placeholder="搜索问题..."
+          class="w-full px-4 py-3 pl-12 text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        />
+        <div class="absolute inset-y-0 left-0 flex items-center pl-4">
+          <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filter Section -->
+  <div class="mb-8">
+    <div class="flex flex-wrap gap-4 justify-center mb-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">分类筛选</label>
+        <div class="flex flex-wrap gap-2">
+          <button 
+            class="filter-btn category-filter active bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-medium transition-colors hover:bg-blue-700"
+            data-category="all"
+          >
+            全部
+          </button>
+          {categories.map(category => (
+            <button 
+              class="filter-btn category-filter bg-gray-200 text-gray-700 px-4 py-2 rounded-full text-sm font-medium transition-colors hover:bg-gray-300"
+              data-category={category}
+            >
+              {category}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    {difficulties.length > 0 && (
+      <div class="flex flex-wrap gap-4 justify-center">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">难度筛选</label>
+          <div class="flex flex-wrap gap-2">
+            <button 
+              class="filter-btn difficulty-filter active bg-green-600 text-white px-4 py-2 rounded-full text-sm font-medium transition-colors hover:bg-green-700"
+              data-difficulty="all"
+            >
+              全部
+            </button>
+            {difficulties.map(difficulty => (
+              <button 
+                class="filter-btn difficulty-filter bg-gray-200 text-gray-700 px-4 py-2 rounded-full text-sm font-medium transition-colors hover:bg-gray-300"
+                data-difficulty={difficulty}
+              >
+                {difficulty}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    )}
+  </div>
+
+  <!-- Featured FAQs Section -->
+  {sortedFaqs.some(faq => faq.featured) && (
+    <div class="mb-12">
+      <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">
+        <span class="inline-flex items-center">
+          <svg class="w-6 h-6 mr-2 text-yellow-500" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+          </svg>
+          热门问题
+        </span>
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        {sortedFaqs.filter(faq => faq.featured).slice(0, 6).map((faq, index) => (
+          <article 
+            class="faq-card bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-200 hover:shadow-lg transition-all duration-300 overflow-hidden slide-up"
+            style={`animation-delay: ${index * 0.1}s`}
+            data-category={faq.category}
+            data-difficulty={faq.difficulty || ''}
+            data-searchable={`${faq.title} ${faq.category} ${faq.tags.join(' ')}`}
+          >
+            <div class="p-6">
+              <div class="flex items-start justify-between mb-3">
+                <span class="bg-blue-600 text-white text-xs px-3 py-1 rounded-full font-medium">
+                  {faq.category}
+                </span>
+                {faq.difficulty && (
+                  <span class={`text-xs px-2 py-1 rounded-full font-medium ${
+                    faq.difficulty === '初级' ? 'bg-green-100 text-green-800' :
+                    faq.difficulty === '中级' ? 'bg-yellow-100 text-yellow-800' :
+                    'bg-red-100 text-red-800'
+                  }`}>
+                    {faq.difficulty}
+                  </span>
+                )}
+              </div>
+              
+              <h3 class="text-lg font-semibold text-gray-900 mb-3 line-clamp-2">
+                <a href={`/faq/${faq.slug}`} class="hover:text-blue-600 transition-colors">
+                  {faq.title}
+                </a>
+              </h3>
+
+              <!-- Tags -->
+              <div class="flex flex-wrap gap-2 mb-4">
+                {faq.tags.slice(0, 3).map(tag => (
+                  <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
+                    #{tag}
+                  </span>
+                ))}
+                {faq.tags.length > 3 && (
+                  <span class="text-xs text-gray-400">
+                    +{faq.tags.length - 3}
+                  </span>
+                )}
+              </div>
+
+              <div class="flex items-center justify-between">
+                <div class="flex items-center text-sm text-gray-500">
+                  <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  {faq.publishDate.toLocaleDateString('zh-CN')}
+                </div>
+                <a 
+                  href={`/faq/${faq.slug}`}
+                  class="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium text-sm transition-colors group"
+                >
+                  查看解答
+                  <svg class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
+                </a>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  )}
+
+  <!-- All FAQs Section -->
+  <div class="mb-8">
+    <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">所有问题</h2>
+  </div>
+
+  <!-- FAQs Grid -->
+  <div id="faqs-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    {sortedFaqs.map((faq, index) => (
+      <article 
+        class="faq-card bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden slide-up border-l-4 border-blue-500"
+        style={`animation-delay: ${index * 0.05}s`}
+        data-category={faq.category}
+        data-difficulty={faq.difficulty || ''}
+        data-searchable={`${faq.title} ${faq.category} ${faq.tags.join(' ')}`}
+      >
+        <div class="p-6">
+          <div class="flex items-start justify-between mb-3">
+            <span class="bg-gray-100 text-gray-800 text-sm px-3 py-1 rounded-full font-medium">
+              {faq.category}
+            </span>
+            {faq.difficulty && (
+              <span class={`text-xs px-2 py-1 rounded-full font-medium ${
+                faq.difficulty === '初级' ? 'bg-green-100 text-green-800' :
+                faq.difficulty === '中级' ? 'bg-yellow-100 text-yellow-800' :
+                'bg-red-100 text-red-800'
+              }`}>
+                {faq.difficulty}
+              </span>
+            )}
+            {faq.featured && (
+              <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full font-medium">
+                热门
+              </span>
+            )}
+          </div>
+          
+          <h3 class="text-xl font-semibold text-gray-900 mb-3 line-clamp-2">
+            <a href={`/faq/${faq.slug}`} class="hover:text-blue-600 transition-colors">
+              {faq.title}
+            </a>
+          </h3>
+
+          <!-- Tags -->
+          <div class="flex flex-wrap gap-2 mb-4">
+            {faq.tags.slice(0, 4).map(tag => (
+              <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
+                #{tag}
+              </span>
+            ))}
+            {faq.tags.length > 4 && (
+              <span class="text-xs text-gray-400">
+                +{faq.tags.length - 4}
+              </span>
+            )}
+          </div>
+
+          <div class="flex items-center justify-between">
+            <div class="flex items-center text-sm text-gray-500">
+              <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              {faq.publishDate.toLocaleDateString('zh-CN')}
+            </div>
+            <a 
+              href={`/faq/${faq.slug}`}
+              class="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium text-sm transition-colors group"
+            >
+              查看解答
+              <svg class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </a>
+          </div>
+        </div>
+      </article>
+    ))}
+  </div>
+
+  <!-- No FAQs message (hidden by default) -->
+  <div id="no-faqs" class="hidden text-center py-12">
+    <div class="text-gray-400 mb-4">
+      <svg class="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    </div>
+    <h3 class="text-xl font-semibold text-gray-600 mb-2">没有找到相关问题</h3>
+    <p class="text-gray-500 mb-4">请尝试使用不同的关键词搜索，或者调整筛选条件。</p>
+    <button 
+      id="clear-filters"
+      class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+    >
+      清除所有筛选
+    </button>
+  </div>
+</BlogLayout>
+
+<script is:inline>
+  document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('search-input');
+    const categoryFilters = document.querySelectorAll('.category-filter');
+    const difficultyFilters = document.querySelectorAll('.difficulty-filter');
+    const faqCards = document.querySelectorAll('.faq-card');
+    const noFaqsMessage = document.getElementById('no-faqs');
+    const faqsContainer = document.getElementById('faqs-container');
+    const clearFiltersBtn = document.getElementById('clear-filters');
+
+    let currentCategoryFilter = 'all';
+    let currentDifficultyFilter = 'all';
+    let currentSearchTerm = '';
+
+    // 搜索功能
+    searchInput.addEventListener('input', function() {
+      currentSearchTerm = this.value.toLowerCase().trim();
+      filterFaqs();
+    });
+
+    // 分类筛选
+    categoryFilters.forEach(button => {
+      button.addEventListener('click', function() {
+        currentCategoryFilter = this.getAttribute('data-category');
+        
+        // Update active button
+        categoryFilters.forEach(btn => {
+          btn.classList.remove('active', 'bg-blue-600', 'text-white');
+          btn.classList.add('bg-gray-200', 'text-gray-700');
+        });
+        
+        this.classList.remove('bg-gray-200', 'text-gray-700');
+        this.classList.add('active', 'bg-blue-600', 'text-white');
+
+        filterFaqs();
+      });
+    });
+
+    // 难度筛选
+    difficultyFilters.forEach(button => {
+      button.addEventListener('click', function() {
+        currentDifficultyFilter = this.getAttribute('data-difficulty');
+        
+        // Update active button
+        difficultyFilters.forEach(btn => {
+          btn.classList.remove('active', 'bg-green-600', 'text-white');
+          btn.classList.add('bg-gray-200', 'text-gray-700');
+        });
+        
+        this.classList.remove('bg-gray-200', 'text-gray-700');
+        this.classList.add('active', 'bg-green-600', 'text-white');
+
+        filterFaqs();
+      });
+    });
+
+    // 清除筛选
+    clearFiltersBtn.addEventListener('click', function() {
+      // Reset search
+      searchInput.value = '';
+      currentSearchTerm = '';
+      
+      // Reset category filter
+      currentCategoryFilter = 'all';
+      categoryFilters.forEach(btn => {
+        btn.classList.remove('active', 'bg-blue-600', 'text-white');
+        btn.classList.add('bg-gray-200', 'text-gray-700');
+      });
+      document.querySelector('[data-category="all"]').classList.remove('bg-gray-200', 'text-gray-700');
+      document.querySelector('[data-category="all"]').classList.add('active', 'bg-blue-600', 'text-white');
+      
+      // Reset difficulty filter
+      currentDifficultyFilter = 'all';
+      difficultyFilters.forEach(btn => {
+        btn.classList.remove('active', 'bg-green-600', 'text-white');
+        btn.classList.add('bg-gray-200', 'text-gray-700');
+      });
+      const allDifficultyBtn = document.querySelector('[data-difficulty="all"]');
+      if (allDifficultyBtn) {
+        allDifficultyBtn.classList.remove('bg-gray-200', 'text-gray-700');
+        allDifficultyBtn.classList.add('active', 'bg-green-600', 'text-white');
+      }
+      
+      filterFaqs();
+    });
+
+    function filterFaqs() {
+      let visibleCount = 0;
+      
+      faqCards.forEach(card => {
+        const category = card.getAttribute('data-category');
+        const difficulty = card.getAttribute('data-difficulty');
+        const searchable = card.getAttribute('data-searchable').toLowerCase();
+        
+        const categoryMatch = currentCategoryFilter === 'all' || category === currentCategoryFilter;
+        const difficultyMatch = currentDifficultyFilter === 'all' || difficulty === currentDifficultyFilter;
+        const searchMatch = currentSearchTerm === '' || searchable.includes(currentSearchTerm);
+        
+        if (categoryMatch && difficultyMatch && searchMatch) {
+          card.style.display = 'block';
+          visibleCount++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      // Show/hide no FAQs message
+      if (visibleCount === 0) {
+        faqsContainer.style.display = 'none';
+        noFaqsMessage.classList.remove('hidden');
+      } else {
+        faqsContainer.style.display = 'grid';
+        noFaqsMessage.classList.add('hidden');
+      }
+    }
+  });
+</script>
+
+<style>
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .faq-card {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+
+  .faq-card.slide-up {
+    animation: slideUp 0.6s ease-out forwards;
+  }
+
+  @keyframes slideUp {
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+</style>

@@ -1,0 +1,29 @@
+---
+const { heading } = Astro.props;
+---
+<li>
+  <a 
+    href={`#${heading.slug}`}
+    class={`${heading.depth === 2 ? 'text-sm font-medium text-gray-900 dark:text-gray-100' : 'text-xs text-gray-600 dark:text-gray-400'} hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200 block py-1.5 leading-tight`}
+    data-toc-link={heading.slug}
+  >
+    {heading.text}
+  </a>
+  {
+    heading.children && heading.children.length > 0 && (
+      <ul class="ml-3 mt-1 space-y-1">
+        {heading.children.map((subheading: any) => (
+          <li class="ml-4">
+            <a 
+              href={`#${subheading.slug}`}
+              class="text-xs text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200 block py-1.5 leading-tight"
+              data-toc-link={subheading.slug}
+            >
+              {subheading.text}
+            </a>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</li>

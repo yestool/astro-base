@@ -1,0 +1,316 @@
+---
+import BaseLayout from './BaseLayout.astro';
+
+export interface Props {
+  title: string;
+  category: string;
+  tags: string[];
+  publishDate: Date;
+  updatedDate?: Date;
+  difficulty?: string;
+  featured?: boolean;
+}
+
+const { 
+  title, 
+  category, 
+  tags, 
+  publishDate, 
+  updatedDate, 
+  difficulty, 
+  featured 
+} = Astro.props;
+
+const formattedDate = publishDate.toLocaleDateString('zh-CN', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric'
+});
+
+const formattedUpdatedDate = updatedDate?.toLocaleDateString('zh-CN', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric'
+});
+---
+
+<BaseLayout title={title} description={title}>
+  <article class="max-w-4xl mx-auto px-4 py-8">
+    <!-- FAQ Header -->
+    <header class="mb-8">
+      <!-- Breadcrumb -->
+      <nav class="mb-6">
+        <div class="flex items-center space-x-2 text-sm text-gray-500">
+          <a href="/" class="hover:text-blue-600 transition-colors">首页</a>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+          <a href="/faq" class="hover:text-blue-600 transition-colors">FAQ</a>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+          <span class="text-gray-700">{category}</span>
+        </div>
+      </nav>
+
+      <!-- FAQ Title -->
+      <h1 class="text-4xl font-bold text-gray-900 mb-4 leading-tight dark:text-white">
+        {title}
+      </h1>
+
+      <!-- FAQ Meta -->
+      <div class="flex flex-wrap items-center gap-4 mb-6">
+        <div class="flex items-center">
+          <span class="bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full font-medium">
+            {category}
+          </span>
+        </div>
+
+        {difficulty && (
+          <div class="flex items-center">
+            <span class={`text-sm px-3 py-1 rounded-full font-medium ${
+              difficulty === '初级' ? 'bg-green-100 text-green-800' :
+              difficulty === '中级' ? 'bg-yellow-100 text-yellow-800' :
+              'bg-red-100 text-red-800'
+            }`}>
+              {difficulty}
+            </span>
+          </div>
+        )}
+
+        {featured && (
+          <div class="flex items-center">
+            <span class="bg-yellow-100 text-yellow-800 text-sm px-3 py-1 rounded-full font-medium inline-flex items-center">
+              <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+              </svg>
+              热门问题
+            </span>
+          </div>
+        )}
+
+        <div class="flex items-center text-gray-500 text-sm">
+          <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+          发布于 {formattedDate}
+        </div>
+
+        {updatedDate && (
+          <div class="flex items-center text-gray-500 text-sm">
+            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            更新于 {formattedUpdatedDate}
+          </div>
+        )}
+      </div>
+
+      <!-- Tags -->
+      {tags.length > 0 && (
+        <div class="flex flex-wrap gap-2 mb-6">
+          {tags.map(tag => (
+            <span class="bg-gray-100 text-gray-700 text-sm px-3 py-1 rounded-full">
+              #{tag}
+            </span>
+          ))}
+        </div>
+      )}
+
+      <!-- Helpful Notice -->
+      <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-8">
+        <div class="flex items-start">
+          <div class="flex-shrink-0">
+            <svg class="w-5 h-5 text-blue-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div class="ml-3">
+            <p class="text-sm text-blue-700">
+              如果这个解答对你有帮助，请考虑分享给其他可能需要的人。如果你有其他相关问题，可以
+              <a href="/faq" class="font-medium underline hover:text-blue-800">浏览更多 FAQ</a>
+              或
+              <a href="/faq#contact" class="font-medium underline hover:text-blue-800">联系我们</a>。
+            </p>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- FAQ Content -->
+    <div class="prose prose-lg max-w-none mb-12">
+      <slot />
+    </div>
+
+    <!-- Actions -->
+    <div class="border-t border-gray-200 pt-8 mb-8">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div class="flex items-center space-x-4">
+          <span class="text-gray-600 text-sm">这个解答有用吗？</span>
+          <div class="flex space-x-2">
+            <button class="flex items-center space-x-1 text-green-600 hover:text-green-700 transition-colors">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
+              </svg>
+              <span class="text-sm">有用</span>
+            </button>
+            <button class="flex items-center space-x-1 text-red-600 hover:text-red-700 transition-colors">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.737 3h4.018c.163 0 .326.02.485.06L17 4m-7 10v2a2 2 0 002 2h.095c.5 0 .905-.405.905-.905 0-.714.211-1.412.608-2.006L17 13V4m-7 10h2m5-10h2a2 2 0 012 2v6a2 2 0 01-2 2h-2.5" />
+              </svg>
+              <span class="text-sm">无用</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="flex space-x-4">
+          <button class="flex items-center space-x-1 text-gray-600 hover:text-gray-700 transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
+            </svg>
+            <span class="text-sm">分享</span>
+          </button>
+          <button class="flex items-center space-x-1 text-gray-600 hover:text-gray-700 transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+            </svg>
+            <span class="text-sm">收藏</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Related FAQs -->
+    <div class="bg-gray-50 rounded-lg p-6">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">相关问题</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <a href="/faq" class="block bg-white rounded-lg p-4 hover:shadow-md transition-shadow">
+          <h4 class="text-sm font-medium text-gray-900 mb-1">浏览更多 FAQ</h4>
+          <p class="text-sm text-gray-600">查看所有常见问题和解答</p>
+        </a>
+        <a href="/faq#contact" class="block bg-white rounded-lg p-4 hover:shadow-md transition-shadow">
+          <h4 class="text-sm font-medium text-gray-900 mb-1">联系技术支持</h4>
+          <p class="text-sm text-gray-600">如果没有找到答案，联系我们</p>
+        </a>
+      </div>
+    </div>
+
+    <!-- Back to FAQs -->
+    <div class="mt-8 text-center">
+      <a 
+        href="/faq" 
+        class="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium transition-colors"
+      >
+        <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        返回 FAQ 列表
+      </a>
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .prose {
+    color: #374151;
+  }
+
+  .prose h2 {
+    color: #111827;
+    font-weight: 600;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  .prose h3 {
+    color: #111827;
+    font-weight: 600;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .prose h4 {
+    color: #111827;
+    font-weight: 600;
+    margin-top: 1.25rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .prose p {
+    margin-bottom: 1rem;
+    line-height: 1.7;
+  }
+
+  .prose ul, .prose ol {
+    margin-bottom: 1rem;
+    padding-left: 1.5rem;
+  }
+
+  .prose li {
+    margin-bottom: 0.5rem;
+    line-height: 1.6;
+  }
+
+  .prose a {
+    color: #2563eb;
+    text-decoration: underline;
+  }
+
+  .prose a:hover {
+    color: #1d4ed8;
+  }
+
+  .prose blockquote {
+    border-left: 4px solid #e5e7eb;
+    margin: 1.5rem 0;
+    padding-left: 1rem;
+    font-style: italic;
+    color: #6b7280;
+  }
+
+  .prose code {
+    background-color: #f3f4f6;
+    padding: 0.125rem 0.25rem;
+    border-radius: 0.25rem;
+    font-size: 0.875em;
+    color: #374151;
+  }
+
+  .prose pre {
+    background-color: #1f2937;
+    color: #f9fafb;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    overflow-x: auto;
+    margin: 1.5rem 0;
+  }
+
+  .prose pre code {
+    background-color: transparent;
+    padding: 0;
+    color: inherit;
+  }
+
+  .prose table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+  }
+
+  .prose th,
+  .prose td {
+    border: 1px solid #e5e7eb;
+    padding: 0.75rem;
+    text-align: left;
+  }
+
+  .prose th {
+    background-color: #f9fafb;
+    font-weight: 600;
+  }
+
+  .prose img {
+    border-radius: 0.5rem;
+    margin: 1.5rem 0;
+  }
+</style>

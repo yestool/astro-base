@@ -1,0 +1,57 @@
+---
+import Meta from '../components/Meta.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/global.css';
+
+export interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  canonical?: string;
+  type?: string;
+  class?: string;
+}
+
+const { title, description, image, canonical, type, class: className } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="zh-CN" class="scroll-smooth">
+  <head>
+    <Meta 
+      title={title}
+      description={description}
+      image={image}
+      canonical={canonical}
+      type={type}
+    />
+    <script is:inline>
+      // 防止页面闪烁 - 在页面加载前设置主题
+      (function() {
+        const theme = localStorage.getItem('theme') || 'dark';
+        if (theme === 'dark') {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+    </script>
+  </head>
+  <body class="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-sans antialiased transition-colors">
+    <Header />
+    <main class={`flex-1 ${className || ''}`}>
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>
+
+<style>
+  html {
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  
+  body {
+    display: flex;
+    flex-direction: column;
+  }
+</style>
