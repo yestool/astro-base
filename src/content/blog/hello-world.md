@@ -4,7 +4,7 @@ description: '这是我的第一篇博客文章，分享我创建这个博客的
 publishDate: 2024-01-15
 author: '博主'
 category: '公告'
-tags: ['博客', '开始', '欢迎']
+tags: ['博客', '开始', '欢迎', '奈飞小镇靠谱吗']
 readingTime: '3 分钟'
 image: 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=400&fit=crop'
 featured: true

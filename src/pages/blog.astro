@@ -61,9 +61,9 @@ const allTags = [...new Set(allPosts.flatMap(post => post.data.tags))].sort();
         </div>
         <div class="p-6">
           <div class="flex items-center mb-3">
-            <span class="bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full font-medium">
+            <a href={`/categories/${encodeURIComponent(post.category)}`} class="bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full font-medium hover:bg-blue-200 transition-colors">
               {post.category}
-            </span>
+            </a>
             {post.featured && (
               <span class="bg-yellow-100 text-yellow-800 text-sm px-3 py-1 rounded-full font-medium ml-2">
                 精选
@@ -90,9 +90,9 @@ const allTags = [...new Set(allPosts.flatMap(post => post.data.tags))].sort();
           <!-- Tags -->
           <div class="flex flex-wrap gap-2 mb-4">
             {post.tags.slice(0, 3).map(tag => (
-              <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
+              <a href={`/tags/${encodeURIComponent(tag)}`} class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded hover:bg-blue-100 hover:text-blue-700 transition-colors">
                 #{tag}
-              </span>
+              </a>
             ))}
             {post.tags.length > 3 && (
               <span class="text-xs text-gray-400">
@@ -117,7 +117,7 @@ const allTags = [...new Set(allPosts.flatMap(post => post.data.tags))].sort();
           </div>
 
           <div class="mt-4">
-            <a 
+            <a
               href={`/blog/${post.slug}`}
               class="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium text-sm transition-colors group"
             >

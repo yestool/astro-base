@@ -1,0 +1,32 @@
+---
+import BlogLayout from '../layouts/BlogLayout.astro';
+import { getCollection } from 'astro:content';
+
+const posts = await getCollection('blog');
+const tagCounts = new Map<string, number>();
+for (const p of posts) {
+  for (const t of p.data.tags) {
+    tagCounts.set(t, (tagCounts.get(t) || 0) + 1);
+  }
+}
+const tags = Array.from(tagCounts.entries())
+  .sort((a, b) => a[0].localeCompare(b[0], 'zh-CN'));
+---
+
+<BlogLayout
+  title="标签"
+  description="浏览所有博客标签"
+>
+  <div class="mb-8 text-center text-gray-600">
+    共 {tags.length} 个标签
+  </div>
+
+  <div class="flex flex-wrap gap-3">
+    {tags.map(([name, count]) => (
+      <a href={`/tags/${encodeURIComponent(name)}`} class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-100 text-gray-700 hover:bg-blue-100 hover:text-blue-700 transition-colors">
+        <span>#{name}</span>
+        <span class="text-xs bg-white/70 text-gray-500 px-2 py-0.5 rounded-full">{count}</span>
+      </a>
+    ))}
+  </div>
+</BlogLayout>

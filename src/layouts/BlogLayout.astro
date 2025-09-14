@@ -22,10 +22,10 @@ const { title, description, image, canonical } = Astro.props;
     <!-- Page Header -->
     <div class="text-center mb-12">
       <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-        博客
+        {title ?? '博客'}
       </h1>
       <p class="text-xl text-gray-600 max-w-2xl mx-auto">
-        技术见解、生活感悟和创意思考的分享空间
+        {description ?? '技术见解、生活感悟和创意思考的分享空间'}
       </p>
     </div>
 
